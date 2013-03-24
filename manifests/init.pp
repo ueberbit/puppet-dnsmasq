@@ -14,7 +14,7 @@ class dnsmasq {
   file { "${dnsmasq::config::configdir}/dnsmasq.conf":
     notify  => Service['dev.dnsmasq'],
     require => File[$dnsmasq::config::configdir],
-    source  => 'puppet:///modules/dnsmasq/dnsmasq.conf'
+    source  => $dnsmasq::config::configfile_source,
   }
 
   file { '/Library/LaunchDaemons/dev.dnsmasq.plist':

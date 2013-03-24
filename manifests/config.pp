@@ -3,7 +3,7 @@
 # Examples
 #
 #   include dnsmasq::config
-class dnsmasq::config {
+class dnsmasq::config ($configfile_source = 'puppet:///modules/dnsmasq/dnsmasq.conf') {
   require boxen::config
 
   $configdir  = "${boxen::config::configdir}/dnsmasq"
