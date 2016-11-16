@@ -1,23 +1,26 @@
-require 'formula'
-
 class Dnsmasq < Formula
-  homepage 'http://www.thekelleys.org.uk/dnsmasq/doc.html'
-  url 'http://www.thekelleys.org.uk/dnsmasq/dnsmasq-2.71.tar.gz'
-  sha1 'b0a39f66557c966629a0ed9282cd87df8f409004'
-  version '2.71-boxen1'
+  desc "Lightweight DNS forwarder and DHCP server"
+  homepage "http://www.thekelleys.org.uk/dnsmasq/doc.html"
+  url "http://www.thekelleys.org.uk/dnsmasq/dnsmasq-2.76.tar.gz"
+  sha256 "777c4762d2fee3738a0380401f2d087b47faa41db2317c60660d69ad10a76c32"
+  version "2.76-boxen2"
 
   bottle do
-    sha1 "96d2784aa36024ce06c727c323c211b0f278950f" => :mavericks
-    sha1 "ede61cf944079d566a059bd4638c75df22bc7057" => :mountain_lion
-    sha1 "a65ee0871fb0dd2d037d1742ca51d38f56005bb4" => :lion
+    cellar :any_skip_relocation
+    sha256 "98d0c8520998b8038c610e43db5fc2f215a164c02810718e6e508d4651f6f523" => :sierra
+    sha256 "be3f214a1a48bee2aa64f8602d1227a1fb7f60ad7e30d1241b3e5b8410ec40b1" => :el_capitan
+    sha256 "ff12dc78fd0b31297e333c991d37d8c1f6979d753755ddc8c09d5153cbf54a22" => :yosemite
+    sha256 "56cfdbe6df3ecff3a6ccf444d8fd79fb234f2b566abc1a4a4631d960eb16851a" => :mavericks
   end
 
-  option 'with-idn', 'Compile with IDN support'
-  option 'with-dnssec', 'Compile with DNSSEC support'
+  option "with-libidn", "Compile with IDN support"
+  option "with-dnssec", "Compile with DNSSEC support"
 
-  depends_on "libidn" if build.with? "idn"
+  deprecated_option "with-idn" => "with-libidn"
+
+  depends_on "pkg-config" => :build
+  depends_on "libidn" => :optional
   depends_on "nettle" if build.with? "dnssec"
-  depends_on 'pkg-config' => :build
 
   def install
     ENV.deparallelize
@@ -26,7 +29,7 @@ class Dnsmasq < Formula
     inreplace "src/config.h", "/etc/dnsmasq.conf", "#{etc}/dnsmasq.conf"
 
     # Optional IDN support
-    if build.with? "idn"
+    if build.with? "libidn"
       inreplace "src/config.h", "/* #define HAVE_IDN */", "#define HAVE_IDN"
     end
 
@@ -42,5 +45,11 @@ class Dnsmasq < Formula
     end
 
     system "make", "install", "PREFIX=#{prefix}"
+
+    prefix.install "dnsmasq.conf.example"
+  end
+
+  test do
+    system "#{sbin}/dnsmasq", "--test"
   end
 end
