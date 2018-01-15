@@ -17,7 +17,7 @@ class dnsmasq(
   require homebrew
 
   if ! $service_name {
-    $service = "${tld}.dnsmasq"
+    $service = "dev.dnsmasq"
   }
 
   file { [$configdir, $logdir, $datadir]:
@@ -66,6 +66,10 @@ class dnsmasq(
   }
 
   service { 'com.boxen.dnsmasq': # replaced by dev.dnsmasq
+    before => Service[$service],
+    enable => false,
+  }
+  service { 'localhost.dnsmasq': # replaced by dev.dnsmasq
     before => Service[$service],
     enable => false,
   }
